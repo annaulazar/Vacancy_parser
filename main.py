@@ -10,5 +10,14 @@ headers = {
 
 
 with open('vacancies.txt', 'w', encoding='utf-8') as file:
-    file.write('\n'.join(res))
+    file.write('')
+
+user_input = 'python'
+
+requests = Superjob(headers), Hh(headers)
+
+for request in requests:
+    vacancies = request.get_request(user_input)
+    with open('vacancies.txt', 'a', encoding='utf-8') as file:
+        file.write('\n'.join(vacancies) + '\n')
 

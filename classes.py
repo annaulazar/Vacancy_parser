@@ -33,7 +33,11 @@ class Superjob(Engine):
                 title = name.text
                 link = 'https://russia.superjob.ru' + name.find('a').get('href')
                 salary = vacancy.find(class_='_2eYAG _1nqY_ _249GZ _1jb_5 _1dIgi').text
-                description = vacancy.find(class_='_1Nj4W _249GZ _1jb_5 _1dIgi _3qTky').text
+                description = vacancy.find('span', class_='_1Nj4W _249GZ _1jb_5 _1dIgi _3qTky')
+                if description:
+                    description = description.text
+                else:
+                    print(title, page)
                 tag = vacancy.find(class_='_3gyJS _1nh_W')
                 if tag:
                     tag = tag.text
@@ -83,7 +87,7 @@ class Hh(Engine):
         Функция получает список вакансий с сайта hh.ru по ключеому слову
         """
         url = 'https://api.hh.ru/vacancies'
-        for i in range(1, 51):
+        for i in range(1, 21):
             par = {"text": user_key, 'area': '113', 'per_page': '10', 'page': str(i)}
             response = requests.get(url, params=par, headers=self.headers).json()
             for item in response['items']:
