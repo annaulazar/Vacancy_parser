@@ -11,13 +11,20 @@ headers = {
 
 with open('vacancies.txt', 'w', encoding='utf-8') as file:
     file.write('')
-
-user_input = 'python'
-
+print('Подбираем вакансии на сайтах Superjob и hh.ru\nВведите ключевое слово для поиска')
+user_input = input('<<< ').strip().lower()
+print('Подбираем вакасии ...')
 requests = Superjob(headers), Hh(headers)
-
+count = 0
 for request in requests:
     vacancies = request.get_request(user_input)
+    count += len(vacancies)
     with open('vacancies.txt', 'a', encoding='utf-8') as file:
         file.write('\n'.join(vacancies) + '\n')
+
+print(f'Найдено {count} вакансий')
+print('-' * 40)
+print('Выберите критерии отбора:\n1. Топ-10 самых высокооплачиваемых вакансий\n2. Вакансии без опыта работы.\n'
+              '3. Вакансии с удаленной работой.\n4. Вакансии для студентов.\n5. Выйти из программы.')
+print('-' * 40)
 
