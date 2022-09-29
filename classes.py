@@ -18,6 +18,21 @@ class Superjob(Engine):
         self.name = 'Superjob'
         self.res = []
 
+    def _get_salary(self, salary: str) -> str:
+        """
+        Функция из переданной строки зарплаты получает строку для единого представления,
+        так как приходит в виде 55 000 — 75 000 руб. или от 15 000 руб
+        """
+        #print(salary)
+        if salary == 'По договорённости':
+            return '0 руб'
+        salary = salary.split(' ')
+        if 'от' in salary or 'до' in salary:
+            return ' '.join((salary[0], salary[1] + salary[2], salary[3]))
+        if '—' not in salary:
+            return ' '.join((salary[0] + salary[1], salary[2]))
+        return ' '.join((salary[0] + salary[1], salary[2], salary[3] + salary[4], salary[5]))
+
     def get_request(self, user_key: str) -> list:
         """
         Функция получает список вакансий с сайта Superjob по ключеому слову user_key
@@ -32,14 +47,17 @@ class Superjob(Engine):
                 name = vacancy.find(class_="_9fIP1 _249GZ _1jb_5 QLdOc")
                 title = name.text
                 link = 'https://russia.superjob.ru' + name.find('a').get('href')
-                salary = vacancy.find(class_='_2eYAG _1nqY_ _249GZ _1jb_5 _1dIgi').text
+                salary = self._get_salary(vacancy.find(class_='_2eYAG _1nqY_ _249GZ _1jb_5 _1dIgi').text)
+                #print(salary)
                 description = vacancy.find('span', class_='_1Nj4W _249GZ _1jb_5 _1dIgi _3qTky')
                 if description:
                     description = description.text
+                else:
+                    description = 'Нет описания'
                 tag = vacancy.find(class_='_3gyJS _1nh_W')
                 if tag:
                     tag = tag.text
-                self.res += [f'{title} / {tag} / {salary} / {description} / {link}']
+                self.res += [f'{title} | {tag} | {salary} | {description} | {link}']
             page += 1
         return self.res
 
@@ -51,7 +69,7 @@ class Hh(Engine):
         self.name = 'hh.ru'
         self.res = []
 
-    def get_tag(self, dict_tags: dict) -> Optional[str]:
+    def _get_tag(self, dict_tags: dict) -> Optional[str]:
         """
         Функция из переданного словаря полей вакансии получает дополнительные теги ('Опыт не нужен' или
         'Удаленная работа')
@@ -65,12 +83,12 @@ class Hh(Engine):
             return None
         return ' '.join(tags)
 
-    def get_salary(self, salary_dict: dict) -> str:
+    def _get_salary(self, salary_dict: dict) -> str:
         """
         Функция из переданного словаря зарплаты получает строку для единого представления
         """
         if salary_dict is None:
-            return 'По договоренности'
+            return '0 руб'
         if salary_dict['currency'] == 'RUR':
             rate = 1
         else:
@@ -83,24 +101,24 @@ class Hh(Engine):
 
     def get_request(self, user_key: str) -> list:
         """
-        Функция получает список вакансий с сайта hh.ru по ключеому слову
+        Функция получает список вакансий с сайта hh.ru по ключевому слову
         """
         url = 'https://api.hh.ru/vacancies'
-        for i in range(1, 21):
-            par = {"text": user_key, 'area': '113', 'per_page': '10', 'page': str(i)}
+        for i in range(1, 4):
+            par = {"text": user_key, 'area': '113', 'per_page': '100', 'page': str(i)}
             response = requests.get(url, params=par, headers=self.headers).json()
             for item in response['items']:
                 title = item['name']
                 link = item['alternate_url']
-                salary = self.get_salary(item['salary'])
+                salary = self._get_salary(item['salary'])
                 description = item['snippet']['responsibility']
                 vacancy_id = item['id']
                 url_id = 'https://api.hh.ru/vacancies/' + str(vacancy_id)
                 response_id = requests.get(url_id, headers=self.headers).json()
                 tags_dict = {'remote': item['schedule']['name'],
                              'experience': response_id['experience']['name']}
-                tag = self.get_tag(tags_dict)
-                self.res += [f'{title} / {tag} / {salary} / {description} / {link}']
+                tag = self._get_tag(tags_dict)
+                self.res += [f'{title} | {tag} | {salary} | {description} | {link}']
         return self.res
 
 
