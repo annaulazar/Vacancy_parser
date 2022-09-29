@@ -23,7 +23,6 @@ class Superjob(Engine):
         Функция из переданной строки зарплаты получает строку для единого представления,
         так как приходит в виде 55 000 — 75 000 руб. или от 15 000 руб
         """
-        #print(salary)
         if salary == 'По договорённости':
             return '0 руб'
         salary = salary.split(' ')
@@ -48,7 +47,6 @@ class Superjob(Engine):
                 title = name.text
                 link = 'https://russia.superjob.ru' + name.find('a').get('href')
                 salary = self._get_salary(vacancy.find(class_='_2eYAG _1nqY_ _249GZ _1jb_5 _1dIgi').text)
-                #print(salary)
                 description = vacancy.find('span', class_='_1Nj4W _249GZ _1jb_5 _1dIgi _3qTky')
                 if description:
                     description = description.text
@@ -112,6 +110,8 @@ class Hh(Engine):
                 link = item['alternate_url']
                 salary = self._get_salary(item['salary'])
                 description = item['snippet']['responsibility']
+                if description is None:
+                    description = 'Нет описания'
                 vacancy_id = item['id']
                 url_id = 'https://api.hh.ru/vacancies/' + str(vacancy_id)
                 response_id = requests.get(url_id, headers=self.headers).json()
