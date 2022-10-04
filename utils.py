@@ -2,8 +2,8 @@ import re
 
 
 def top_10_salary(data: list) -> list:
-    res = sorted(data, key=lambda x: -int(re.search(r'(\d{1,6}) руб', x).group(1)))
-    return res[:10]
+    res = sorted(data, key=lambda x: -int(re.search(r'(\d{1,6}) руб', x).group(1)))[:10]
+    return res
 
 
 def without_experience(data: list) -> list:

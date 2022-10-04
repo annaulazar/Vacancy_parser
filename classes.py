@@ -18,7 +18,8 @@ class Superjob(Engine):
         self.name = 'Superjob'
         self.res = []
 
-    def _get_salary(self, salary: str) -> str:
+    @staticmethod
+    def _get_salary(salary: str) -> str:
         """
         Функция из переданной строки зарплаты получает строку для единого представления,
         так как приходит в виде 55 000 — 75 000 руб. или от 15 000 руб
@@ -67,7 +68,8 @@ class Hh(Engine):
         self.name = 'hh.ru'
         self.res = []
 
-    def _get_tag(self, dict_tags: dict) -> Optional[str]:
+    @staticmethod
+    def _get_tag(dict_tags: dict) -> Optional[str]:
         """
         Функция из переданного словаря полей вакансии получает дополнительные теги ('Опыт не нужен' или
         'Удаленная работа')
@@ -81,7 +83,8 @@ class Hh(Engine):
             return None
         return ' '.join(tags)
 
-    def _get_salary(self, salary_dict: dict) -> str:
+    @staticmethod
+    def _get_salary(salary_dict: dict) -> str:
         """
         Функция из переданного словаря зарплаты получает строку для единого представления
         """
@@ -122,9 +125,9 @@ class Hh(Engine):
         return self.res
 
 
-class Vacancy:
-    def __init__(self, vacancy: list):
-        pass
-
-    def __repr__(self):
-        pass
+# class Vacancy:
+#     def __init__(self, vacancy: list):
+#         pass
+#
+#     def __repr__(self):
+#         pass
