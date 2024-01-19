@@ -12,7 +12,7 @@ def get_vacancies() -> int:
                 'accept': '*/*',
                 'user-agent': UserAgent().opera
             }
-    with open('vacancies.txt', 'w', encoding='utf-8') as file:
+    with open('../vacancies.txt', 'w', encoding='utf-8') as file:
         file.write('')
     print('Подбираем вакансии на сайтах Superjob и hh.ru\nВведите ключевое слово для поиска')
     user_input = input('<<< ').strip().lower()
@@ -22,9 +22,10 @@ def get_vacancies() -> int:
     failure = False  # Флаг, что уже с одного сайта был отказ
     for req in my_requests:
         try:
+            print(f'Ищем на {req.name}')
             vacancies = req.get_request(user_input)
             count_vacancies += len(vacancies)
-            with open('vacancies.txt', 'a', encoding='utf-8') as file:
+            with open('../vacancies.txt', 'a', encoding='utf-8') as file:
                 file.write('\n'.join(vacancies) + '\n')
         except Exception as ex:
             print(f'Сайт {req.name} не отвечает, {ex}')
@@ -50,7 +51,7 @@ def main() -> None:
         user_choice = input('<<< ')
         if user_choice == '6':
             quit()
-        with open('vacancies.txt', 'r', encoding='utf-8') as file:
+        with open('../vacancies.txt', 'r', encoding='utf-8') as file:
             try:
                 result = functions[user_choice](file)
                 print(f'Под ваш запрос найдено {len(result)} вакансий\n')
