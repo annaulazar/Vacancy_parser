@@ -1,4 +1,5 @@
 import re
+from typing import Union
 
 
 def top_10_salary(data: list) -> list:
@@ -21,17 +22,14 @@ def for_students(data: list) -> list:
     return list(res)
 
 
-def more_salary(data: list) -> list:
-    print('Введите размер заработной платы')
-    while True:
-        user_salary = input('<<< ')
-        try:
-            user_salary = int(user_salary)
-            res = filter(lambda x: int(re.search(r'(\d{1,6}) руб', x).group(1)) >= user_salary, data)
-            return list(res)
-        except ValueError:
-            print('Введите число')
-            continue
+def more_salary(data: list, user_salary: str) -> list:
+    try:
+        user_salary = int(user_salary)
+    except ValueError:
+        raise ValueError
+    user_salary = int(user_salary)
+    res = filter(lambda x: int(re.search(r'(\d{1,6}) руб', x).group(1)) >= user_salary, data)
+    return list(res)
 
 
 def print_vacancy(data: str) -> None:
@@ -44,3 +42,14 @@ def print_vacancy(data: str) -> None:
     print('=' * 50)
     print(title, tag, salary, description, link, sep='\n')
     print()
+
+
+def print_vacancies(result_list: list) -> None:
+    print(f'Под ваш запрос найдено {len(result_list)} вакансий\n')
+    for item in result_list[:10]:  # Сразу выводим только 10 подходящих вакансий, по запросу остальные
+        print_vacancy(item)
+    if len(result_list) > 10:
+        answer = input('Показать все (Y/N)? <<< ').strip().lower()
+        if answer == 'y':
+            for item in result_list[10:]:
+                print_vacancy(item)

@@ -47,21 +47,26 @@ def main() -> None:
         print('-' * 40)
         # словарь с функциями по номерам меню
         functions = {'1': top_10_salary, '2': without_experience, '3': remote_job,
-                     '4': for_students, '5': more_salary}
+                     '4': for_students}
         user_choice = input('<<< ')
         if user_choice == '6':
             quit()
         with open('../vacancies.txt', 'r', encoding='utf-8') as file:
+            vacancies_list = file.readlines()
+        if user_choice == '5':
+            print('Введите размер заработной платы')
+            while True:
+                user_salary = input('<<< ')
+                try:
+                    result = more_salary(vacancies_list, user_salary)
+                    print_vacancies(result)
+                except ValueError:
+                    print('Введите число')
+                    continue
+        else:
             try:
-                result = functions[user_choice](file)
-                print(f'Под ваш запрос найдено {len(result)} вакансий\n')
-                for item in result[:10]:  # Сразу выводим только 10 подходящих вакансий, по запросу остальные
-                    print_vacancy(item)
-                if len(result) > 10:
-                    answer = input('Показать все (Y/N)? <<< ').strip().lower()
-                    if answer == 'y':
-                        for item in result[10:]:
-                            print_vacancy(item)
+                result = functions[user_choice](vacancies_list)
+                print_vacancies(result)
             except KeyError:
                 print('Введите число от 1 до 6')
 
