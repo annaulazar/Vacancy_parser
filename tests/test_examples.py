@@ -1,4 +1,6 @@
 import pytest
+from contextlib import nullcontext as does_not_rise
+
 from src.examples import A, Calculator
 
 # def test_example1():
@@ -8,26 +10,33 @@ from src.examples import A, Calculator
 # def test_main():
 #     assert A.x == 1
 
+class TestCalculator:
+    @pytest.mark.parametrize(
+        "x, y, res, expectation",
+        [
+            (1, 2, 0.5, does_not_rise()),
+            (5, -1, -5, does_not_rise()),
+            (5, '-1', None, pytest.raises(TypeError)),
+            (5, 0, None, pytest.raises(ZeroDivisionError)),
+            (0, 5, 0, does_not_rise()),
+            (5, '0', None, pytest.raises(TypeError))
 
-@pytest.mark.parametrize(
-    "x, y, res",
-    [
-        (1, 2, 0.5),
-        (5, -1, -5),
-
-    ]
-)
-def test_devision(x, y, res):
-    assert Calculator().devide(x, y) == res
+        ]
+    )
+    def test_devision(self, x, y, res, expectation):
+        with expectation:
+            assert Calculator().devide(x, y) == res
 
 
-@pytest.mark.parametrize(
-    "x, y, res",
-    [
-        (1, 2, 3),
-        (5, -1, 4),
+    @pytest.mark.parametrize(
+        "x, y, res, expectation",
+        [
+            (1, 2, 3, does_not_rise()),
+            (5, -1, 4, does_not_rise()),
+            ('a', 'b', None, pytest.raises(TypeError))
 
-    ]
-)
-def test_add(x, y, res):
-    assert Calculator().add(x, y) == res
+        ]
+    )
+    def test_add(self, x, y, res, expectation):
+        with expectation:
+            assert Calculator().add(x, y) == res
